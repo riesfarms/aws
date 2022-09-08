@@ -1,0 +1,54 @@
+version: "3.8"
+
+x-default: &default
+  restart: unless-stopped
+  working_dir: /project
+  build:
+    context: .
+    dockerfile: ./nbdev-env/Dockerfile
+  image: nbdev-env:python-3.10.6
+  logging:
+    driver: json-file
+    options:
+      max-size: 50m
+  stdin_open: true
+  tty: true
+  volumes:
+    - type: volume
+      source: home-loper
+      target: /home/loper
+    - type: bind
+      source: .
+      target: /project
+
+services:
+  setup:
+    <<: *default
+    restart: "no"
+    command: ["python", "nbdev-env/guided.py"]
+
+  notebook:
+    <<: *default
+    command: ["jupyter-lab", "--allow-root", "--no-browser", "--ip=0.0.0.0", "--port=8080", "--ServerApp.token=''", "--ServerApp.password=''", "--ContentsManager.allow_hidden=True"]
+    ports:
+      - "8080:8080"
+    depends_on:
+      - setup
+
+  quarto:
+    <<: *default
+    ports:
+      - "3000:3000"
+    command: >
+      bash -c
+      "pip install . &&
+      nbdev_preview"
+    depends_on:
+      - notebook
+
+volumes:
+  home-loper:
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${PWD}/nbdev-env/loper"
