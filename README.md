@@ -19,11 +19,3 @@ Fill me in please! Don’t forget code examples:
 ```
 
     2
-
-``` python
-```
-
-    /home/loper/.local/lib/python3.10/site-packages/nbdev/clean.py:110: UserWarning: Failed to clean notebook
-      warn(f'{warn_msg}')
-    /home/loper/.local/lib/python3.10/site-packages/nbdev/clean.py:111: UserWarning: 'metadata'
-      warn(e)
